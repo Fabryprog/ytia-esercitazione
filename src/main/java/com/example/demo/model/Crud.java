@@ -13,7 +13,7 @@ public interface Crud {
 
 	public Map<String, Object> retrieveUser(String id);
 
-	public Map<String, Object> createUser(Map<String, String> body);
+	public Map<String, Object> createUser(UserDTO body);
 
 	public Map<String, Object> update(String id, Map<String, String> body);
 

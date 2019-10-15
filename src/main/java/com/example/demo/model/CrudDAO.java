@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
  * @author Fabrizio Spataro
  *
  */
+@Component
 public class CrudDAO implements Crud {
 	@Value("${spring.datasource.url}")
 	private String url;
@@ -26,7 +27,7 @@ public class CrudDAO implements Crud {
 	@Value("${spring.datasource.username}")
 	private String username;
 
-	@Value("${spring.datasource.passwrd}")
+	@Value("${spring.datasource.password}")
 	private String pwd;
 
 	private final static String USER_GETALL = "select ID, FIRSTNAME, LASTNAME, USERNAME, PASSWORD, `ROLE` FROM `USER` ";
@@ -60,7 +61,7 @@ public class CrudDAO implements Crud {
 	        	item.put("firstname", rs.getString(2));
 	        	item.put("lastname", rs.getString(3));
 	        	item.put("username", rs.getString(4));
-	        	item.put("role", rs.getInt(6));
+	        	item.put("role", rs.getObject(6) != null ? rs.getInt(6) : null);
 	        	
 	        	result.add(item);
 	        }
@@ -77,14 +78,57 @@ public class CrudDAO implements Crud {
 
 	@Override
 	public Map<String, Object> retrieveUser(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String, Object> result = new HashMap<String,Object>();
+		
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		
+		try {
+			statement = jdbcConnection.prepareStatement(USER_GET);
+         
+	        rs = statement.executeQuery();
+	         
+	        if(rs.next()) {
+	        	result.put("id", rs.getInt(1));
+	        	result.put("firstname", rs.getString(2));
+	        	result.put("lastname", rs.getString(3));
+	        	result.put("username", rs.getString(4));
+	        	result.put("role", rs.getObject(6) != null ? rs.getInt(6) : null);
+	        }
+	        
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {rs.close();}catch (Exception e) {}
+	        try {statement.close();}catch (Exception e) {}
+        
+		}
+        return result;
 	}
 
 	@Override
-	public Map<String, Object> createUser(Map<String, String> body) {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, Object> createUser(UserDTO user) {
+		PreparedStatement statement = null;
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		try {
+			statement = jdbcConnection.prepareStatement(USER_CREATE);
+			statement.setString(1, user.getFirstName());
+			statement.setString(2, user.getLastName());
+			statement.setString(3, user.getUsername());
+			statement.setString(4, user.getPassword());
+			
+			Integer rows = statement.executeUpdate();
+	         
+        	result.put("rows", rows);
+        	
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+	        try {statement.close();}catch (Exception e) {}
+        
+		}
+        return result;
 	}
 
 	@Override

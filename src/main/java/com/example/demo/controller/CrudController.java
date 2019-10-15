@@ -17,13 +17,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.CrudDAO;
+import com.example.demo.model.UserDTO;
 
 /**
  * @author Fabrizio Spataro
  *
  */
+@RestController
+@RequestMapping("/api/v1")
 public class CrudController {
 
+	@Autowired
 	private CrudDAO crudDao;
 	
     @GetMapping("/user")
@@ -39,9 +43,10 @@ public class CrudController {
     }
     
     @PostMapping("/user")
-	public Map<String, Object> createUser(@RequestBody Map<String, String> body) {
-    	//TODO
-    	return null;
+	public Map<String, Object> createUser(@RequestBody Map<String, Object> body) {
+    	UserDTO user = new UserDTO((Integer)body.get("id"), (String)body.get("firstname"), (String)body.get("lastname"), (String)body.get("username"), (String)body.get("password"), (Integer)body.get("role"));
+    	
+    	return crudDao.createUser(user);
     }
     
     @PutMapping("/user/{id}")

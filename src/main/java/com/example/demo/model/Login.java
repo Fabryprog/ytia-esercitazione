@@ -4,7 +4,7 @@ package com.example.demo.model;
  * @author Fabrizio Spataro
  *
  */
-public interface Logins {
+public interface Login {
 	
 	/** 
 	 * Check the login information 
